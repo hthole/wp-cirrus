@@ -37,6 +37,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 
 public class TheCloud extends FlowPanel {
 
+	private double theta = 0.01;
+	private double psi = 0.01;
+
 	public TheCloud(final String[] words) {
 
 		final Canvas canvas = Canvas.createIfSupported();
@@ -46,8 +49,8 @@ public class TheCloud extends FlowPanel {
 
 		context2d.fillText("Test", 10, 20);
 
-		final double radius = canvas.getCanvasElement().getHeight() / 3.0;
-		final int refreshrate = 100;
+		final double radius = canvas.getCanvasElement().getHeight() / 2.6;
+		final int refreshrate = 30;
 
 		final List<CloudItem> itemList = new ArrayList<CloudItem>(words.length);
 		for (final String s : words) {
@@ -77,8 +80,8 @@ public class TheCloud extends FlowPanel {
 
 		}
 
-		final double ySteps = 0.06;
-		final double xSteps = 0.06;
+		final double ySteps = 0.0006;
+		final double xSteps = 0.0006;
 
 		Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
 
@@ -88,20 +91,18 @@ public class TheCloud extends FlowPanel {
 				canvas.setCoordinateSpaceHeight(250);
 				canvas.setCoordinateSpaceWidth(250);
 
-				double theta = 0.1;
-				double psi = 0.1;
+				final double cosPsi = Math.cos(psi);
+				final double sinPsi = Math.sin(psi);
+
+				final double cosTheta = Math.cos(theta);
+				final double sinTheta = Math.sin(theta);
+
+				final double sinThetaCosPsi = sinTheta * cosPsi;
+				final double sinThetaSinPsi = sinTheta * sinPsi;
 
 				for (final CloudItem ci : itemList) {
 
 					final double x, y, z;
-					final double cosPsi = Math.cos(psi);
-					final double sinPsi = Math.sin(psi);
-
-					final double cosTheta = Math.cos(theta);
-					final double sinTheta = Math.sin(theta);
-
-					final double sinThetaCosPsi = sinTheta * cosPsi;
-					final double sinThetaSinPsi = sinTheta * sinPsi;
 
 					x = ci.x * cosTheta * cosPsi + ci.y * cosTheta * sinPsi
 							- ci.z * sinTheta;
@@ -111,14 +112,14 @@ public class TheCloud extends FlowPanel {
 					ci.x = x;
 					ci.y = y;
 					ci.z = z;
-					context2d.fillText(ci.text, 100 + ci.y, 100 + ci.z);
+					context2d.fillText(ci.text, 125 + ci.y, 125 + ci.z);
 
-					System.out.println(ci.x + " " + ci.y + " " + ci.z + " - "
-							+ ci.theta + " " + ci.phi + " " + ci.text);
+					// System.out.println(ci.x + " " + ci.y + " " + ci.z + " - "
+					// + ci.theta + " " + ci.phi + " " + ci.text);
 				}
-				theta += ySteps;
-				psi += xSteps;
-
+				// theta += ySteps;
+				// psi += xSteps;
+				// System.out.println(theta);
 				if (theta > Math.PI * 2.0) {
 					theta = 0.0;
 				}

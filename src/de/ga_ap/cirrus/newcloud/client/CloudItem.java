@@ -29,6 +29,10 @@ package de.ga_ap.cirrus.newcloud.client;
 public class CloudItem {
 
 	String text;
+	String fontFamily; // Arial, Times, ...
+	String fontColor;
+	String fontStyle; // normal, italic, ...
+	String fontWeight; // bold, normal, ...
 	double theta;
 	double phi;
 	double x;
