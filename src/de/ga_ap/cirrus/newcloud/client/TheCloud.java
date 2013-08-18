@@ -33,31 +33,40 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 
-public class TheCloud extends FlowPanel {
+public class TheCloud {
 
 	private double theta = 0.01;
 	private double psi = 0.01;
 
-	public TheCloud(final String[] words) {
+	public TheCloud(final Element cloudContainer) {
+
+		final NodeList<Element> aElements = cloudContainer
+				.getElementsByTagName("A");
+		final int height = cloudContainer.getOffsetHeight();
+		final int width = cloudContainer.getOffsetWidth();
 
 		final Canvas canvas = Canvas.createIfSupported();
-		canvas.setCoordinateSpaceHeight(250);
-		canvas.setCoordinateSpaceWidth(250);
+		canvas.setCoordinateSpaceHeight(height);
+		canvas.setCoordinateSpaceWidth(width);
 		final Context2d context2d = canvas.getContext2d();
 
 		context2d.fillText("Test", 10, 20);
 
-		final double radius = canvas.getCanvasElement().getHeight() / 2.6;
+		final double radius = canvas.getCanvasElement().getHeight() / 3;
 		final int refreshrate = 30;
 
-		final List<CloudItem> itemList = new ArrayList<CloudItem>(words.length);
-		for (final String s : words) {
+		final List<CloudItem> itemList = new ArrayList<CloudItem>(
+				aElements.getLength());
+		for (int i = 0; i < aElements.getLength(); i++) {
+			final Element el = aElements.getItem(i);
 			final CloudItem ci = new CloudItem();
-			ci.text = s;
+			ci.text = el.getInnerText();
 			itemList.add(ci);
 		}
+		cloudContainer.setInnerText("");
 
 		final int itemListSize = itemList.size();
 		for (int i = 1; i <= itemListSize; i++) {
@@ -88,8 +97,8 @@ public class TheCloud extends FlowPanel {
 			@Override
 			public boolean execute() {
 
-				canvas.setCoordinateSpaceHeight(250);
-				canvas.setCoordinateSpaceWidth(250);
+				canvas.setCoordinateSpaceHeight(height);
+				canvas.setCoordinateSpaceWidth(width);
 
 				final double cosPsi = Math.cos(psi);
 				final double sinPsi = Math.sin(psi);
@@ -131,6 +140,6 @@ public class TheCloud extends FlowPanel {
 		}, refreshrate);
 
 		System.out.println(radius);
-		this.add(canvas);
+		cloudContainer.appendChild(canvas.getCanvasElement());
 	}
 }
