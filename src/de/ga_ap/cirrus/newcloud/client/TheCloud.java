@@ -38,6 +38,9 @@ import com.google.gwt.dom.client.NodeList;
 
 public class TheCloud {
 
+	private double ySteps = 0.0;
+	private double xSteps = 0.0;
+
 	private double theta = 0.01;
 	private double psi = 0.01;
 
@@ -52,8 +55,6 @@ public class TheCloud {
 		canvas.setCoordinateSpaceHeight(height);
 		canvas.setCoordinateSpaceWidth(width);
 		final Context2d context2d = canvas.getContext2d();
-
-		context2d.fillText("Test", 10, 20);
 
 		final double radius = canvas.getCanvasElement().getHeight() / 3;
 		final int refreshrate = 30;
@@ -89,9 +90,6 @@ public class TheCloud {
 
 		}
 
-		final double ySteps = 0.0006;
-		final double xSteps = 0.0006;
-
 		Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
 
 			@Override
@@ -121,13 +119,17 @@ public class TheCloud {
 					ci.x = x;
 					ci.y = y;
 					ci.z = z;
-					context2d.fillText(ci.text, 125 + ci.y, 125 + ci.z);
+
+					context2d.setGlobalAlpha(0.7 + ci.x / radius / 3.0);
+					context2d.setFont("20pt Arial");
+					context2d.fillText(ci.text, radius + ci.y, radius + ci.z);
 
 					// System.out.println(ci.x + " " + ci.y + " " + ci.z + " - "
 					// + ci.theta + " " + ci.phi + " " + ci.text);
 				}
-				// theta += ySteps;
-				// psi += xSteps;
+
+				theta += ySteps;
+				psi += xSteps;
 				// System.out.println(theta);
 				if (theta > Math.PI * 2.0) {
 					theta = 0.0;
@@ -138,6 +140,32 @@ public class TheCloud {
 				return true;
 			}
 		}, refreshrate);
+
+		// final EventListener listener = new EventListener() {
+		//
+		// @Override
+		// public void onBrowserEvent(final Event event) {
+		// if (event.getTypeInt() == Event.ONMOUSEMOVE) {
+		// moveSteps(event);
+		// } else if (event.getTypeInt() == Event.ONTOUCHMOVE) {
+		// event.preventDefault(); // prevents the default behavior of
+		// // a page when touching
+		// moveSteps(event);
+		// }
+		// }
+		//
+		// private void moveSteps(final Event event) {
+		// ySteps = -((event.getClientY() + Window.getScrollTop())
+		// / canvas.getCoordinateSpaceHeight() * 0.000002 - 0.1) / 2.0;
+		// xSteps = ((event.getClientX() + Window.getScrollLeft())
+		// / canvas.getCoordinateSpaceWidth() * 0.000002 - 0.1) / 2.0;
+		// }
+		// };
+		//
+		// DOM.setEventListener(
+		// (com.google.gwt.user.client.Element) cloudContainer, listener);
+		// DOM.sinkEvents((com.google.gwt.user.client.Element) cloudContainer,
+		// Event.ONMOUSEMOVE + Event.ONTOUCHMOVE);
 
 		System.out.println(radius);
 		cloudContainer.appendChild(canvas.getCanvasElement());
